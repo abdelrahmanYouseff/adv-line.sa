@@ -11,28 +11,16 @@ Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-// Route to display PDF files
+// Route to display book-like interface
 Route::get('qrs/{id}', function ($id) {
-    $pdfFiles = [
-        1 => 'Delawa Menu.pdf',
-        2 => 'منيو بكيزة.pdf'
-    ];
-
-    if (!isset($pdfFiles[$id])) {
+    // Validate that the ID is valid (1 or 2 for now)
+    if (!in_array($id, [1, 2])) {
         abort(404, 'QR code not found');
     }
 
-    $fileName = $pdfFiles[$id];
-    $pdfPath = public_path('pdf/' . $fileName);
-
-    if (file_exists($pdfPath)) {
-        return response()->file($pdfPath, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="' . $fileName . '"'
-        ]);
-    }
-
-    abort(404, 'PDF file not found');
+    return Inertia::render('Book', [
+        'id' => (int) $id
+    ]);
 })->name('qrs.show');
 
 require __DIR__.'/settings.php';
